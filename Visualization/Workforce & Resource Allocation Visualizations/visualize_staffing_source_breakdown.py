@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Load data
 df = pd.read_csv('csv_files/staffing_source_breakdown_by_district.csv')
 
 # Set District as index for easier plotting
