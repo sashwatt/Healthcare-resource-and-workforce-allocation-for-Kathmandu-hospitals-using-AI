@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Load data
 df = pd.read_csv('csv_files/seasonal_disease_heatmap.csv')
 
 # If the first column is 'Disease' or similar, set it as index
