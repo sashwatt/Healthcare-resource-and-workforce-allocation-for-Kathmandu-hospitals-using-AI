@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Load data
 df = pd.read_csv('staff_utilization_patient_load.csv')
 
 # Set positions and width for the bars
