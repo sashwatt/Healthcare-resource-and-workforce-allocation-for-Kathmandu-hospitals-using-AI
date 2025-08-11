@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Load data
 df = pd.read_csv('csv_files/patient_to_staff_ratio_by_district.csv')
 
 # Sort by Patient_to_Staff_Ratio for better visualization
