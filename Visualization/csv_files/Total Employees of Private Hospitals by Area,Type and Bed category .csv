@@ -1,0 +1,18 @@
+S.N.,Heading,Area,Male,Female,Total
+1,Development Region,Eastern,1342,1474,2816
+2,Development Region,Central,5640,6728,12368
+3,Development Region,Western,2431,3021,5452
+4,Development Region,Mid Western,802,755,1557
+5,Development Region,Far Western,183,205,388
+6,Ecological Belt,Mountain,69,61,130
+7,Ecological Belt,Hill,6313,8074,14387
+8,Ecological Belt,Terai,4016,4048,8064
+9,Out of and In - Kathmandu Valley,Kathmandu Valley,3845,5298,9143
+10,Out of and In - Kathmandu Valley,Out of Kathmandu Valley,6553,6885,13438
+11,Type of Hospitals,Private Hospital,7453,9390,16843
+12,Type of Hospitals,Community Hospital,1706,1764,3470
+13,Type of Hospitals,Other Hospital,1239,1029,2268
+14,Bed Category,Up to 15 Beds,1242,1203,2445
+15,Bed Category,16 to 50 Beds,1749,2164,3913
+16,Bed Category,51 to 100 Beds,2429,3068,5497
+17,Bed Category,More than 100 Beds,4978,5748,10726

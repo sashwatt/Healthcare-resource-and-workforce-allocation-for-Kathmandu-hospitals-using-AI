@@ -1,0 +1,6 @@
+Department,Nurses,Doctors,Patient Load
+Emergency,25,15,100
+Outpatient,30,20,80
+Wards,50,30,120
+ICU,20,15,40
+Pharmacy,10,5,20

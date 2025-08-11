@@ -1,0 +1,8 @@
+Department,Current Communication Flow (Fragmented),Proposed Communication Flow (Integrated)
+Administration,"Separate updates, delayed info from Procurement & HR","Real-time dashboard with Procurement & HR"
+Procurement,"Receives patient trend data late from Clinical Teams","Instant alerts on patient surges via central system"
+Pharmacy,"Manual requests, delays in supply restocking","Automated stock updates linked to patient load"
+Human Resources,"Static staffing info, no real-time update on shortages","Dynamic staffing adjustments based on demand"
+Emergency Department,"No coordination with other departments","Continuous info sharing with Pharmacy & Administration"
+Clinical Teams,"Isolated data, limited visibility of resources","Shared access to resource availability dashboards"
+Logistics,"Uncoordinated supply deliveries","Integrated logistics scheduling and tracking"

@@ -1,0 +1,6 @@
+Step,Description,Next Step
+1,AI generates recommendation,2
+2,Human reviews recommendation,3
+3,Decision approved,5
+4,Decision overridden by human,5
+5,Final decision implemented,

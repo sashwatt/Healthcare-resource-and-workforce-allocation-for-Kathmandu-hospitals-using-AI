@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Resource Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Prevents overflow issues */
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .map-box {
+            height: 400px;
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #475569;
+            font-weight: 500;
+        }
+        select, button {
+            transition: all 0.2s ease-in-out;
+        }
+        select:focus, button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+        }
+        .heatmap-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <div class="dashboard-container">
+        <header class="flex flex-col sm:flex-row justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">Hospital Resource Allocation Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <label for="season-select" class="font-medium text-gray-700">Select Season:</label>
+                <select id="season-select" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500">
+                    <option value="all">All Seasons</option>
+                    <option value="monsoon">Monsoon</option>
+                    <option value="winter">Winter</option>
+                    <option value="spring">Spring</option>
+                    <option value="autumn">Autumn</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Key Metrics Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div class="card p-6 flex-grow">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Projected Patient Influx</h3>
+                <p class="text-4xl font-bold text-blue-600">
+                    <span id="patient-influx">1,200</span>
+                    <span class="text-sm font-normal text-gray-500">patients</span>
+                </p>
+                <p class="text-gray-500 mt-2">Predicted for the selected season.</p>
+            </div>
+            <div class="card p-6 flex-grow">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Required Medical Staff</h3>
+                <p class="text-4xl font-bold text-green-600">
+                    <span id="required-staff">150</span>
+                    <span class="text-sm font-normal text-gray-500">staff</span>
+                </p>
+                <p class="text-gray-500 mt-2">Recommended workforce adjustment.</p>
+            </div>
+            <div class="card p-6 flex-grow">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Available Hospital Beds</h3>
+                <p class="text-4xl font-bold text-yellow-600">
+                    <span id="available-beds">350</span>
+                    <span class="text-sm font-normal text-gray-500">beds</span>
+                </p>
+                <p class="text-gray-500 mt-2">Estimated bed capacity.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Map Visualization with user-provided image -->
+            <div class="lg:col-span-2 card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Seasonal Disease Outbreak Heatmap (Kathmandu Valley)</h3>
+                <div id="map-visualization" class="map-box">
+                    <img src="assets/images/seasonal_disease_heatmap.png" alt="Seasonal Disease Outbreak Heatmap" class="heatmap-image">
+                </div>
+            </div>
+
+            <!-- Disease Distribution Chart -->
+            <div class="card flex flex-col">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Common Diseases by Season</h3>
+                <div class="chart-container">
+                    <canvas id="disease-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Workforce Distribution Chart -->
+            <div class="card flex flex-col">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Workforce Distribution by Hospital</h3>
+                <div class="chart-container">
+                    <canvas id="workforce-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Patient Influx Trend Chart -->
+            <div class="card flex flex-col">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Monthly Patient Influx Trends</h3>
+                <div class="chart-container">
+                    <canvas id="influx-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Prediction Feature -->
+        <div class="card mt-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">AI-Powered Resource Planning</h3>
+            <div class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-4">
+                <textarea id="ai-prompt" class="flex-grow p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 resize-none h-24" placeholder="Ask the AI for a prediction or recommendation, e.g., 'What is the best way to allocate staff during the monsoon season?'"></textarea>
+                <button id="predict-button" class="bg-blue-600 text-white font-medium py-3 px-6 rounded-lg shadow hover:bg-blue-700 focus:ring-2 focus:ring-blue-500">Generate Prediction</button>
+            </div>
+            <div id="ai-prediction-output" class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 min-h-[50px] whitespace-pre-wrap">
+                Your AI prediction will appear here.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const seasonSelect = document.getElementById('season-select');
+            const patientInflux = document.getElementById('patient-influx');
+            const requiredStaff = document.getElementById('required-staff');
+            const availableBeds = document.getElementById('available-beds');
+            const diseaseChartCanvas = document.getElementById('disease-chart');
+            const workforceChartCanvas = document.getElementById('workforce-chart');
+            const influxChartCanvas = document.getElementById('influx-chart');
+            const aiPromptInput = document.getElementById('ai-prompt');
+            const predictButton = document.getElementById('predict-button');
+            const aiPredictionOutput = document.getElementById('ai-prediction-output');
+
+            // Initialize chart instances
+            let diseaseChartInstance;
+            let workforceChartInstance;
+            let influxChartInstance;
+
+            const data = {
+                'all': {
+                    patientInflux: '1,200', requiredStaff: '150', availableBeds: '350',
+                    diseaseLabels: ['Fever', 'Colds', 'Typhoid', 'Dengue', 'Others'],
+                    diseaseData: [300, 250, 150, 100, 400],
+                    workforceLabels: ['Kanti Hospital', 'Teaching Hospital', 'Bir Hospital', 'Patan Hospital'],
+                    workforceData: [40, 35, 45, 30],
+                    influxLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    influxData: [80, 70, 90, 100, 120, 150, 200, 220, 180, 130, 110, 90]
+                },
+                'monsoon': {
+                    patientInflux: '2,500', requiredStaff: '280', availableBeds: '200',
+                    diseaseLabels: ['Dengue', 'Typhoid', 'Diarrhea', 'Others'],
+                    diseaseData: [1200, 800, 500, 200],
+                    workforceLabels: ['Kanti Hospital', 'Bir Hospital', 'Patan Hospital', 'Teaching Hospital'],
+                    workforceData: [70, 80, 60, 70],
+                    influxLabels: ['Jun', 'Jul', 'Aug', 'Sep'],
+                    influxData: [150, 200, 220, 180]
+                },
+                'winter': {
+                    patientInflux: '1,800', requiredStaff: '200', availableBeds: '250',
+                    diseaseLabels: ['Influenza', 'Pneumonia', 'Colds', 'Others'],
+                    diseaseData: [700, 500, 300, 300],
+                    workforceLabels: ['Teaching Hospital', 'Kanti Hospital', 'Bir Hospital', 'Patan Hospital'],
+                    workforceData: [50, 55, 45, 50],
+                    influxLabels: ['Dec', 'Jan', 'Feb'],
+                    influxData: [90, 80, 70]
+                },
+                'spring': {
+                    patientInflux: '1,000', requiredStaff: '120', availableBeds: '400',
+                    diseaseLabels: ['Allergies', 'Asthma', 'Respiratory', 'Others'],
+                    diseaseData: [300, 250, 150, 300],
+                    workforceLabels: ['Patan Hospital', 'Kanti Hospital', 'Teaching Hospital', 'Bir Hospital'],
+                    workforceData: [30, 30, 30, 30],
+                    influxLabels: ['Mar', 'Apr', 'May'],
+                    influxData: [90, 100, 120]
+                },
+                'autumn': {
+                    patientInflux: '1,500', requiredStaff: '180', availableBeds: '300',
+                    diseaseLabels: ['Seasonal Flu', 'Fevers', 'Coughs', 'Others'],
+                    diseaseData: [500, 400, 300, 300],
+                    workforceLabels: ['Bir Hospital', 'Teaching Hospital', 'Kanti Hospital', 'Patan Hospital'],
+                    workforceData: [45, 50, 45, 40],
+                    influxLabels: ['Sep', 'Oct', 'Nov'],
+                    influxData: [180, 130, 110]
+                }
+            };
+
+            const createCharts = (initialData) => {
+                // Chart for Common Diseases by Season
+                diseaseChartInstance = new Chart(diseaseChartCanvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: initialData.diseaseLabels,
+                        datasets: [{
+                            label: 'Patient Count',
+                            data: initialData.diseaseData,
+                            backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(234, 179, 8, 0.8)', 'rgba(244, 63, 94, 0.8)', 'rgba(100, 116, 139, 0.8)'],
+                            hoverBackgroundColor: ['rgba(59, 130, 246, 1)', 'rgba(16, 185, 129, 1)', 'rgba(234, 179, 8, 1)', 'rgba(244, 63, 94, 1)', 'rgba(100, 116, 139, 1)'],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            }
+                        }
+                    }
+                });
+
+                // Chart for Workforce Distribution by Hospital
+                workforceChartInstance = new Chart(workforceChartCanvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: initialData.workforceLabels,
+                        datasets: [{
+                            label: 'Number of Staff',
+                            data: initialData.workforceData,
+                            backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(234, 179, 8, 0.8)', 'rgba(244, 63, 94, 0.8)'],
+                            hoverBackgroundColor: ['rgba(16, 185, 129, 1)', 'rgba(59, 130, 246, 1)', 'rgba(234, 179, 8, 1)', 'rgba(244, 63, 94, 1)'],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            }
+                        }
+                    }
+                });
+
+                // Chart for Monthly Patient Influx Trends
+                influxChartInstance = new Chart(influxChartCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: initialData.influxLabels,
+                        datasets: [{
+                            label: 'Patient Influx',
+                            data: initialData.influxData,
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            tension: 0.3,
+                            fill: true,
+                            pointStyle: 'circle',
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            };
+
+            const updateDashboard = (seasonData) => {
+                // Update Key Metrics
+                patientInflux.textContent = seasonData.patientInflux;
+                requiredStaff.textContent = seasonData.requiredStaff;
+                availableBeds.textContent = seasonData.availableBeds;
+                
+                // Update Chart Data
+                diseaseChartInstance.data.labels = seasonData.diseaseLabels;
+                diseaseChartInstance.data.datasets[0].data = seasonData.diseaseData;
+                diseaseChartInstance.update();
+
+                workforceChartInstance.data.labels = seasonData.workforceLabels;
+                workforceChartInstance.data.datasets[0].data = seasonData.workforceData;
+                workforceChartInstance.update();
+                
+                influxChartInstance.data.labels = seasonData.influxLabels;
+                influxChartInstance.data.datasets[0].data = seasonData.influxData;
+                influxChartInstance.update();
+            };
+
+            // Initial load
+            const initialData = data['all'];
+            createCharts(initialData);
+            updateDashboard(initialData);
+            
+            seasonSelect.addEventListener('change', (e) => {
+                const selectedSeason = e.target.value;
+                const seasonData = data[selectedSeason];
+                updateDashboard(seasonData);
+            });
+
+            // AI Prediction Feature
+            predictButton.addEventListener('click', async () => {
+                const prompt = aiPromptInput.value.trim();
+                const selectedSeason = seasonSelect.value;
+                if (!prompt) {
+                    aiPredictionOutput.textContent = 'Please enter a prompt.';
+                    return;
+                }
+
+                aiPredictionOutput.textContent = 'Generating prediction...';
+                
+                const systemPrompt = `You are an AI assistant for a hospital resource allocation dashboard. The current selected season is "${selectedSeason}". The dashboard data shows:
+- Projected Patient Influx: ${data[selectedSeason].patientInflux}
+- Required Medical Staff: ${data[selectedSeason].requiredStaff}
+- Available Hospital Beds: ${data[selectedSeason].availableBeds}
+- Common Diseases: ${data[selectedSeason].diseaseLabels.join(', ')}
+
+Based on this information and the user's query, provide a detailed and professional recommendation.`;
+                
+                const fullPrompt = `${systemPrompt}\n\nUser Query: ${prompt}`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: fullPrompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API error: ${errorData.error.message}`);
+                    }
+
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        aiPredictionOutput.textContent = text;
+                    } else {
+                        aiPredictionOutput.textContent = "Error: Could not retrieve a prediction. Please try again.";
+                    }
+                } catch (error) {
+                    console.error('API call failed:', error);
+                    aiPredictionOutput.textContent = `An error occurred: ${error.message}. Please check the console for details.`;
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
