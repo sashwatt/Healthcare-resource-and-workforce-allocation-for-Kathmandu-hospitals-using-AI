@@ -27,7 +27,7 @@
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; /* Prevents overflow issues */
         }
         .chart-container {
             position: relative;
@@ -107,11 +107,11 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            <!-- Map Visualization with user-provided image -->
+            <!-- Dynamic Visualization Section -->
             <div class="lg:col-span-2 card">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Seasonal Disease Outbreak Heatmap (Kathmandu Valley)</h3>
+                <h3 id="map-title" class="text-xl font-semibold text-gray-800 mb-4"></h3>
                 <div id="map-visualization" class="map-box">
-                    <img src="assets/images/seasonal_disease_heatmap.png" alt="Seasonal Disease Outbreak Heatmap" class="heatmap-image">
+                    <img id="rotating-image" src="" alt="" class="heatmap-image">
                 </div>
             </div>
 
@@ -167,6 +167,32 @@
             const aiPromptInput = document.getElementById('ai-prompt');
             const predictButton = document.getElementById('predict-button');
             const aiPredictionOutput = document.getElementById('ai-prediction-output');
+            
+            // Elements for the rotating visualization
+            const mapTitle = document.getElementById('map-title');
+            const rotatingImage = document.getElementById('rotating-image');
+            
+            // Array of visualizations to cycle through
+            const visualizations = [
+                { src: 'assets/images/seasonal_disease_heatmap.png', title: 'Seasonal Disease Outbreak Heatmap (Kathmandu Valley)', alt: 'Heatmap showing seasonal disease outbreaks in Kathmandu' },
+                { src: 'assets/images/patient_to_staff_ratio_by_district.png', title: 'Patient to Health Staff Ratio', alt: 'Chart showing the patient to health staff ratio' },
+                { src: 'assets/images/employees_by_type_of_hospitals.png', title: 'Employees by Type of Hospitals', alt: 'Chart showing the number of employees by hospital type' },
+                { src: 'assets/images/staff_utilization_vs_patient_load.png', title: 'Staff Utilization vs. Patient Load', alt: 'Chart showing staff utilization against patient load' }
+            ];
+
+            let currentImageIndex = 0;
+
+            const updateImage = () => {
+                const currentViz = visualizations[currentImageIndex];
+                mapTitle.textContent = currentViz.title;
+                rotatingImage.src = currentViz.src;
+                rotatingImage.alt = currentViz.alt;
+                currentImageIndex = (currentImageIndex + 1) % visualizations.length;
+            };
+
+            // Start the rotation and also show the first image immediately
+            updateImage();
+            setInterval(updateImage, 10000);
 
             // Initialize chart instances
             let diseaseChartInstance;
