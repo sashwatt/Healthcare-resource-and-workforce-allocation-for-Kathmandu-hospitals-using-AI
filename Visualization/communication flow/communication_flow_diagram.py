@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Load CSV
+# Load data
 df = pd.read_csv('communication_flow.csv')
 
 
