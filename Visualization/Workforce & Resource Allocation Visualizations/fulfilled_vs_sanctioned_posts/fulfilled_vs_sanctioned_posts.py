@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
+# Load data
 df = pd.read_csv('csv_files/fulfilled_vs_sanctioned_posts.csv')
 
 # --- 1. Scatter Plot: Sanctioned vs Fulfilled ---
