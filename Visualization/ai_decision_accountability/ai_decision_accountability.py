@@ -2,7 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 
+# Load data
 df = pd.read_csv('ai_decision_accountability.csv')
+
 
 # Create figure
 fig, ax = plt.subplots(figsize=(12, 8))
