@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+# Load data
 df = pd.read_csv('csv_files/Total Employees of Private Hospitals by Area,Type and Bed category .csv')
 
 df.columns = df.columns.str.strip()
