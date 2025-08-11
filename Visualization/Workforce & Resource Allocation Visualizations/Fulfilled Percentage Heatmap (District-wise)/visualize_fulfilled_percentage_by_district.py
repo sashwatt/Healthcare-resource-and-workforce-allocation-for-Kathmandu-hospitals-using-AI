@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Load data
 df = pd.read_csv('csv_files/fulfilled_percentage_by_district.csv')
 
 # Sort by Fulfilled %
